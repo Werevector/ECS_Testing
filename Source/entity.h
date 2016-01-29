@@ -24,6 +24,8 @@ public:
 	vec2 acceleration;
 
 	rgba primitiveColor = rgba();
+
+	float controllSpeed = 0;
 	
 	SDL_Rect primitive;
 

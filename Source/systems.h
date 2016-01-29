@@ -29,3 +29,9 @@ class RenderSystem{
 public:
 	bool update(SDL_Renderer* renderer, std::vector<Entity*> entities);
 };
+
+class ControllSystem {
+public:
+	bool update(SDL_Event* sdl_Event, std::vector<Entity*> entities);
+private:
+};

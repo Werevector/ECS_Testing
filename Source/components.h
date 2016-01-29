@@ -9,9 +9,10 @@ namespace ComponentMask {
 		POSITION = 1,
 		VELOCITY = 1 << 2,
 		ACCELERATION = 1 << 3,
-		CONTROLLER_INPUT = 1 << 4,
+		GRAVITY = 1 << 4,
 		RENDERER_PRIMITIVE = 1 << 5,
-		RENDERER_TEXTURE = 1 << 6
+		RENDERER_TEXTURE = 1 << 6,
+		CONTROLLER_KEYBOARD = 1 << 7,
+		CONTROLLER_MOUSE = 1 << 8
 	};
 }
-

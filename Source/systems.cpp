@@ -30,6 +30,8 @@ bool RenderSystem::update(SDL_Renderer* renderer, std::vector<Entity*> entities)
 
 	std::vector<Entity*>::iterator entity;
 	for (entity = entities.begin(); entity != entities.end(); entity++) {
+		
+		//Store Component Checks
 		bool renderPrim = (*entity)->HasComponent(ComponentMask::RENDERER_PRIMITIVE);
 		bool renderTex = (*entity)->HasComponent(ComponentMask::RENDERER_TEXTURE);
 		bool hasPos = (*entity)->HasComponent(ComponentMask::POSITION);
@@ -50,6 +52,37 @@ bool RenderSystem::update(SDL_Renderer* renderer, std::vector<Entity*> entities)
 		}
 		else {
 			success = false;
+		}
+
+	}
+	return success;
+}
+
+bool ControllSystem::update(SDL_Event* sdl_Event, std::vector<Entity*> entities){
+	bool success = true;
+
+	std::vector<Entity*>::iterator entity;
+	for (entity = entities.begin(); entity != entities.end(); entity++) {
+		bool hasKeyBoardControll = (*entity)->HasComponent(ComponentMask::CONTROLLER_KEYBOARD);
+
+		const Uint8* keyboard;
+
+		if (hasKeyBoardControll) {
+			keyboard = SDL_GetKeyboardState(NULL);
+
+			if (keyboard[SDL_SCANCODE_W]) {
+				(*entity)->velocity.y -= (*entity)->controllSpeed;
+			}
+			if (keyboard[SDL_SCANCODE_S]) {
+				(*entity)->velocity.y += (*entity)->controllSpeed;
+			}
+			if (keyboard[SDL_SCANCODE_A]) {
+				(*entity)->velocity.x -= (*entity)->controllSpeed;
+			}
+			if (keyboard[SDL_SCANCODE_D]) {
+				(*entity)->velocity.x += (*entity)->controllSpeed;
+			}
+
 		}
 
 	}
