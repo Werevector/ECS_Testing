@@ -35,3 +35,14 @@ public:
 	bool update(SDL_Event* sdl_Event, std::vector<Entity*> entities);
 private:
 };
+
+class CollisionSystem {
+public:
+	bool update(std::vector<Entity*> entities);
+
+};
+
+class CollisionResolver {
+public:
+	bool resolveRectCollide(Entity* entA, Entity* entB, SDL_Rect* intersection);
+};

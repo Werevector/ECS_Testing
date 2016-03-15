@@ -3,14 +3,25 @@
 bool MovementSystem::update(std::vector<Entity*> entities, float delta) {
 	bool success = true;
 
+	bool hasPos;
+	bool hasVel;
+	bool hasAcc;
+	bool hasGrav;
+
 	std::vector<Entity*>::iterator entity;
 	for (entity = entities.begin(); entity != entities.end(); entity++) {
-		bool hasPos = (*entity)->HasComponent(ComponentMask::POSITION);
-		bool hasVel = (*entity)->HasComponent(ComponentMask::VELOCITY);
-		bool hasAcc = (*entity)->HasComponent(ComponentMask::ACCELERATION);
+		hasPos = (*entity)->HasComponent(ComponentMask::POSITION);
+		hasVel = (*entity)->HasComponent(ComponentMask::VELOCITY);
+		hasAcc = (*entity)->HasComponent(ComponentMask::ACCELERATION);
+		hasGrav = (*entity)->HasComponent(ComponentMask::GRAVITY);
 
 		if (hasPos) {
 			if (hasAcc) {
+
+				if (hasGrav) {
+					(*entity)->velocity.y += 0.3;
+				}
+
 				(*entity)->velocity.x += (*entity)->acceleration.x;
 				(*entity)->velocity.y += (*entity)->acceleration.y;
 			}
@@ -37,7 +48,14 @@ bool RenderSystem::update(SDL_Renderer* renderer, std::vector<Entity*> entities)
 		bool hasPos = (*entity)->HasComponent(ComponentMask::POSITION);
 
 		if (renderTex) {
-			//NO TEXTURE SUPPORT
+			(*entity)->texture.renderALTER(
+				renderer,
+				(*entity)->position.x,
+				(*entity)->position.y,
+				NULL,
+				&(*entity)->renderTarget,
+				(*entity)->angle
+				);
 		}
 		else if (renderPrim) {
 
@@ -87,4 +105,32 @@ bool ControllSystem::update(SDL_Event* sdl_Event, std::vector<Entity*> entities)
 
 	}
 	return success;
+}
+
+bool CollisionSystem::update(std::vector<Entity*> entities) {
+	for (int i = 0; i < entities.size()-1; i++) {
+		
+		Entity* entity = entities[i];
+		bool hasDetect = entity->HasComponent(ComponentMask::COLLISION_DETECTOR_AXALIGN);
+		bool hasResolver = entity->HasComponent(ComponentMask::COLLISON_RESOLVER);
+
+		if (hasDetect) {
+			for (int i2 = i + 1; i2 < entities.size(); i2++ ) {
+				SDL_Rect result;
+				
+
+				if (SDL_IntersectRect(&(entity->boundingBox),
+					&(entities[i2]->boundingBox),
+					&result) == SDL_TRUE) 
+				{
+					
+				}
+			}
+		}
+	}
+}
+
+bool CollisionResolver::resolveRectCollide(Entity * entA, Entity * entB, SDL_Rect* intersection)
+{
+	;
 }

@@ -2,6 +2,7 @@
 #include "sdl.h"
 #include "components.h"
 #include "structures.h"
+#include "Texture.h"
 
 class Entity {
 public:
@@ -28,6 +29,12 @@ public:
 	float controllSpeed = 0;
 	
 	SDL_Rect primitive;
+	SDL_Rect renderTarget;
+	Texture texture;
+	float angle = 0.5;
+	int health = 0;
+
+	SDL_Rect boundingBox;
 
 private:
 

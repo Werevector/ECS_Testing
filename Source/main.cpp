@@ -10,8 +10,9 @@ int main(int argc, char* argv[]) {
 
 	bool quit = false;
 
-	SDL_Init(SDL_INIT_VIDEO);
-	SDL_Window* window = SDL_CreateWindow("Entity Components", 100,100 ,400,400, SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SDL_Init(SDL_INIT_EVERYTHING);
+	TTF_Init();
+	SDL_Window* window = SDL_CreateWindow("Entity Components", 100,100 ,400,400, SDL_WINDOW_SHOWN );
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 
 	std::vector<Entity*> entityArray;
@@ -20,33 +21,45 @@ int main(int argc, char* argv[]) {
 	MovementSystem movement;
 	ControllSystem control;
 	
-	SDL_Rect rect; rect.w = 20; rect.h = 20;
-
+	SDL_Rect rect; rect.w = 70; rect.h = 20;
+	SDL_Color color = {255,255,255};
+	
 	Entity box;
-	box.AddComponent(POSITION | VELOCITY | ACCELERATION | RENDERER_PRIMITIVE);
+	box.AddComponent(POSITION | VELOCITY | ACCELERATION | RENDERER_TEXTURE | CONTROLLER_KEYBOARD | GRAVITY);
 	box.SetPrimitive(rect);
+	box.renderTarget = rect;
+	box.controllSpeed = 0.5f;
+	//box.texture.loadFromRenderedText(renderer, TTF_OpenFont("aller.ttf", 30), "", color);
 	box.position = vec2(50, 50);
 	box.primitiveColor = rgba(255, 255, 255, 1);
-	box.acceleration.x = 0.01;
+	box.acceleration.x = 0;
 	entityArray.push_back(&box);
 
+	rect.w = 100; rect.h = 100;
 	Entity box2;
-	box2.AddComponent(POSITION | VELOCITY | RENDERER_PRIMITIVE | CONTROLLER_KEYBOARD);
+	box2.AddComponent(POSITION | VELOCITY | ACCELERATION | RENDERER_TEXTURE | GRAVITY);
 	box2.SetPrimitive(rect);
+	box2.texture.loadFromFile(renderer, "mfw.PNG");
+	box2.renderTarget = rect;
 	box2.position = vec2(50, 90);
 	box2.controllSpeed = 0.1f;
 	box2.primitiveColor = rgba(255, 255, 0, 1);
-	box2.acceleration.y = 0.01;
+	box2.acceleration.x = 0.5;
 	box2.velocity.y = 0.2;
 	box2.velocity.x = 0.1;
+	box2.angle = 30;
 	entityArray.push_back(&box2);
 
-	rect.w = 50;
-	rect.h = 50;
+	rect.w = 90;
+	rect.h = 90;
 
 	Entity player;
-	player.AddComponent(POSITION | VELOCITY | RENDERER_PRIMITIVE | CONTROLLER_KEYBOARD);
+	player.AddComponent(POSITION | VELOCITY);
 	player.SetPrimitive(rect);
+	player.texture.loadFromFile(renderer, "devil.png");
+	/*rect.w = player.texture.getWidth();
+	rect.h = player.texture.getHeight();*/
+	player.renderTarget = rect;
 	player.position = vec2(100, 200);
 	player.primitiveColor = rgba(255, 0, 0, 1);
 	player.controllSpeed = 0.5f;
@@ -74,10 +87,16 @@ int main(int argc, char* argv[]) {
 					quit = true;
 				}
 			}
+
+			
 		}
+
+		player.angle += 10;
 
 		//CONTROLLTEST
 		control.update(event, entityArray);
+
+		box.texture.loadFromRenderedText(renderer, TTF_OpenFont("aller.ttf", 15), std::to_string((int)box2.velocity.x), color);
 
 		//UPDATETEST
 		movement.update(entityArray, 1.f);
