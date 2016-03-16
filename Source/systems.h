@@ -44,5 +44,6 @@ public:
 
 class CollisionResolver {
 public:
-	bool resolveRectCollide(Entity* entA, Entity* entB, SDL_Rect* intersection);
+	static void resolveRectCollide(Entity* entA, Entity* entB, SDL_Rect* intersection);
+	static Direction findDirectionFromIntersect(Entity* ent, SDL_Rect* intersection);
 };

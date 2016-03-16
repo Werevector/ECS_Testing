@@ -20,46 +20,50 @@ int main(int argc, char* argv[]) {
 	RenderSystem rendering;
 	MovementSystem movement;
 	ControllSystem control;
+	CollisionSystem collision;
 	
-	SDL_Rect rect; rect.w = 70; rect.h = 20;
+	SDL_Rect rect; rect.w = 70; rect.h = 70;
 	SDL_Color color = {255,255,255};
 	
 	Entity box;
-	box.AddComponent(POSITION | VELOCITY | ACCELERATION | RENDERER_TEXTURE | CONTROLLER_KEYBOARD | GRAVITY);
+	box.AddComponent(POSITION | RENDERER_PRIMITIVE);
 	box.SetPrimitive(rect);
 	box.renderTarget = rect;
 	box.controllSpeed = 0.5f;
 	//box.texture.loadFromRenderedText(renderer, TTF_OpenFont("aller.ttf", 30), "", color);
-	box.position = vec2(50, 50);
+	box.position = vec2(100, 100);
 	box.primitiveColor = rgba(255, 255, 255, 1);
+	box.boundingBox = rect;
 	box.acceleration.x = 0;
 	entityArray.push_back(&box);
 
 	rect.w = 100; rect.h = 100;
 	Entity box2;
-	box2.AddComponent(POSITION | VELOCITY | ACCELERATION | RENDERER_TEXTURE | GRAVITY);
+	box2.AddComponent(POSITION | VELOCITY | ACCELERATION | RENDERER_PRIMITIVE);
 	box2.SetPrimitive(rect);
 	box2.texture.loadFromFile(renderer, "mfw.PNG");
 	box2.renderTarget = rect;
-	box2.position = vec2(50, 90);
+	box2.boundingBox = rect;
+	box2.position = vec2(300, 140);
 	box2.controllSpeed = 0.1f;
 	box2.primitiveColor = rgba(255, 255, 0, 1);
-	box2.acceleration.x = 0.5;
-	box2.velocity.y = 0.2;
-	box2.velocity.x = 0.1;
+	box2.acceleration.x = -0.1;
+	box2.velocity.y = 0.0;
+	box2.velocity.x = -0.5;
 	box2.angle = 30;
 	entityArray.push_back(&box2);
 
-	rect.w = 90;
-	rect.h = 90;
+	rect.w = 30;
+	rect.h = 30;
 
 	Entity player;
-	player.AddComponent(POSITION | VELOCITY);
+	player.AddComponent(POSITION | VELOCITY | CONTROLLER_KEYBOARD | RENDERER_PRIMITIVE | COLLISION_DETECTOR_AXALIGN | COLLISON_RESOLVER);
 	player.SetPrimitive(rect);
 	player.texture.loadFromFile(renderer, "devil.png");
 	/*rect.w = player.texture.getWidth();
 	rect.h = player.texture.getHeight();*/
 	player.renderTarget = rect;
+	player.boundingBox = rect;
 	player.position = vec2(100, 200);
 	player.primitiveColor = rgba(255, 0, 0, 1);
 	player.controllSpeed = 0.5f;
@@ -71,7 +75,9 @@ int main(int argc, char* argv[]) {
 
 	
 	while (!quit) {
+		
 		if (SDL_PollEvent(event)) {
+			
 			if (event->type == SDL_QUIT) { quit = true; }
 			if (event->type == SDL_KEYUP) {
 				if (event->key.keysym.scancode == SDL_SCANCODE_R) {
@@ -96,10 +102,13 @@ int main(int argc, char* argv[]) {
 		//CONTROLLTEST
 		control.update(event, entityArray);
 
-		box.texture.loadFromRenderedText(renderer, TTF_OpenFont("aller.ttf", 15), std::to_string((int)box2.velocity.x), color);
+		//box.texture.loadFromRenderedText(renderer, TTF_OpenFont("aller.ttf", 15), std::to_string((int)box2.velocity.x), color);
 
 		//UPDATETEST
 		movement.update(entityArray, 1.f);
+
+		//COLLISIONTEST
+		collision.update(entityArray);
 
 		//RENDERTEST
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);

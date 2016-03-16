@@ -32,7 +32,13 @@ bool MovementSystem::update(std::vector<Entity*> entities, float delta) {
 		}
 		else
 			success = false;
+
+		
+		(*entity)->boundingBox.x = (*entity)->position.x;
+		(*entity)->boundingBox.y = (*entity)->position.y;
+
 	}
+
 	return success;
 }
 
@@ -108,29 +114,89 @@ bool ControllSystem::update(SDL_Event* sdl_Event, std::vector<Entity*> entities)
 }
 
 bool CollisionSystem::update(std::vector<Entity*> entities) {
-	for (int i = 0; i < entities.size()-1; i++) {
+	for (int i = 0; i < entities.size(); i++) {
 		
 		Entity* entity = entities[i];
+		bool hasRequired = entity->HasComponent(
+			ComponentMask::VELOCITY&&
+			ComponentMask::ACCELERATION&&
+			ComponentMask::POSITION
+			);
+
+
 		bool hasDetect = entity->HasComponent(ComponentMask::COLLISION_DETECTOR_AXALIGN);
 		bool hasResolver = entity->HasComponent(ComponentMask::COLLISON_RESOLVER);
 
 		if (hasDetect) {
-			for (int i2 = i + 1; i2 < entities.size(); i2++ ) {
+			for (int i2 = 0; i2 < entities.size(); i2++ ) {
 				SDL_Rect result;
-				
 
-				if (SDL_IntersectRect(&(entity->boundingBox),
-					&(entities[i2]->boundingBox),
-					&result) == SDL_TRUE) 
-				{
-					
+				if (! SDL_RectEquals(
+					&(entity->boundingBox),
+					&(entities[i2]->boundingBox) )) {
+
+
+					if (SDL_IntersectRect(&(entity->boundingBox),
+						&(entities[i2]->boundingBox),
+						&result) == SDL_TRUE)
+					{
+						if (hasResolver)
+							CollisionResolver::resolveRectCollide(
+								entity,
+								entities[i2],
+								&result);
+					}
 				}
 			}
 		}
 	}
+	return true;
 }
 
-bool CollisionResolver::resolveRectCollide(Entity * entA, Entity * entB, SDL_Rect* intersection)
+void CollisionResolver::resolveRectCollide(Entity* entA, Entity* entB, SDL_Rect* intersection)
 {
-	;
+	Direction collDir = CollisionResolver::findDirectionFromIntersect(entA, intersection);
+
+	switch(collDir) {
+	
+	case UP:
+		entA->position.y -= intersection->h;
+		entA->velocity.y = 0;
+		break;
+		
+	case DOWN:
+		entA->position.y += intersection->h;
+		entA->velocity.y = 0;
+		break;
+
+	case LEFT:
+		entA->position.x -= intersection->w;
+		entA->velocity.x = 0;
+		break;
+
+	case RIGHT:
+		entA->position.x += intersection->w;
+		entA->velocity.x = 0;
+		break;
+	}
+
+}
+
+Direction CollisionResolver::findDirectionFromIntersect(Entity* ent, SDL_Rect* intersection)
+{
+	Direction collDir = Direction::UP;
+
+	//Figure out the collision direction from intersection rectangle
+	if (intersection->w < intersection->h)
+		if (intersection->x > ent->boundingBox.x)
+			collDir = Direction::LEFT;
+		else
+			collDir = Direction::RIGHT;
+	else
+		if (intersection->y > ent->boundingBox.y)
+			collDir = Direction::UP;
+		else
+			collDir = Direction::DOWN;
+
+	return collDir;
 }

@@ -18,3 +18,10 @@ public:
 	int b;
 	int a;
 };
+
+enum Direction {
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT
+};
