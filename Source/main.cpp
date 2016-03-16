@@ -46,10 +46,10 @@ int main(int argc, char* argv[]) {
 	box2.boundingBox = rect;
 	box2.position = vec2(300, 140);
 	box2.controllSpeed = 0.1f;
-	box2.primitiveColor = rgba(255, 255, 0, 1);
-	box2.acceleration.x = -0.1;
+	box2.primitiveColor = rgba(0, 255, 0, 1);
+	box2.acceleration.x = -0.0;
 	box2.velocity.y = 0.0;
-	box2.velocity.x = -0.5;
+	box2.velocity.x = -0.3;
 	box2.angle = 30;
 	entityArray.push_back(&box2);
 
