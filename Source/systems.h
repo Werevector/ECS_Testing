@@ -28,6 +28,11 @@ public:
 class RenderSystem{
 public:
 	bool update(SDL_Renderer* renderer, std::vector<Entity*> entities);
+private:
+	void renderPrimitive(Entity*, SDL_Renderer*);
+	void renderTexture(Entity*, SDL_Renderer*);
+	void renderAnimated(Entity*, SDL_Renderer*);
+	void stateCheck(Entity*);
 };
 
 class ControllSystem {
@@ -46,4 +51,17 @@ class CollisionResolver {
 public:
 	static void resolveRectCollide(Entity* entA, Entity* entB, SDL_Rect* intersection);
 	static Direction findDirectionFromIntersect(Entity* ent, SDL_Rect* intersection);
+};
+
+class AnimationSystem {
+public:
+	static void update(std::vector<Entity*> entities);
+};
+
+class StateSystem {
+public:
+	static void update(std::vector<Entity*> entities);
+
+private:
+	void checkMoveStates(std::vector<Entity*> entities);
 };

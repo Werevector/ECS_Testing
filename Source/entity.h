@@ -3,6 +3,7 @@
 #include "components.h"
 #include "structures.h"
 #include "Texture.h"
+#include "SpriteSheet.h"
 
 class Entity {
 public:
@@ -31,10 +32,18 @@ public:
 	SDL_Rect primitive;
 	SDL_Rect renderTarget;
 	Texture texture;
+	SpriteSheet spritesheet;
 	float angle = 0.5;
 	int health = 0;
 
 	SDL_Rect boundingBox;
+
+	Animation animation;
+
+	EntityState::Movement movementState = EntityState::IDLE;
+	bool stateChanged = false;
+	bool grounded = false;
+	bool collidedGround = false;
 
 private:
 
